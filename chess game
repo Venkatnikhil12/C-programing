@@ -1,0 +1,79 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+#define SIZE 8
+
+// Initialize the board with pieces
+void initializeBoard(char board[SIZE][SIZE]) {
+    char initial[SIZE][SIZE] = {
+        {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'},
+        {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
+        {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}
+    };
+    for (int i = 0; i < SIZE; i++)
+        for (int j = 0; j < SIZE; j++)
+            board[i][j] = initial[i][j];
+}
+
+// Print the board
+void printBoard(char board[SIZE][SIZE]) {
+    printf("  a b c d e f g h\n");
+    printf(" +----------------\n");
+    for (int i = 0; i < SIZE; i++) {
+        printf("%d| ", SIZE - i);
+        for (int j = 0; j < SIZE; j++)
+            printf("%c ", board[i][j]);
+        printf("\n");
+    }
+}
+
+// Convert position from chess notation to board indices
+int convertPosition(char pos[2], int *row, int *col) {
+    if (pos[0] < 'a' || pos[0] > 'h' || pos[1] < '1' || pos[1] > '8')
+        return 0;
+    *col = pos[0] - 'a';
+    *row = SIZE - (pos[1] - '1' + 1);
+    return 1;
+}
+
+// Move a piece on the board
+int movePiece(char board[SIZE][SIZE], char from[2], char to[2]) {
+    int fromRow, fromCol, toRow, toCol;
+
+    if (!convertPosition(from, &fromRow, &fromCol) || !convertPosition(to, &toRow, &toCol))
+        return 0;
+
+    if (board[fromRow][fromCol] == ' ')
+        return 0;
+
+    board[toRow][toCol] = board[fromRow][fromCol];
+    board[fromRow][fromCol] = ' ';
+    return 1;
+}
+
+int main() {
+    char board[SIZE][SIZE];
+    char from[2], to[2];
+
+    initializeBoard(board);
+
+    while (1) {
+        printBoard(board);
+        printf("Enter move (e.g., e2 e4) or 'q' to quit: ");
+        scanf("%s", from);
+        if (tolower(from[0]) == 'q') break;
+
+        scanf("%s", to);
+
+        if (!movePiece(board, from, to))
+            printf("Invalid move! Try again.\n");
+    }
+
+    return 0;
+}
